@@ -8,7 +8,11 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-
+/**
+ * 文件处理 该程序解决了文件的模块化输入 输出 复制
+ * 
+ *
+ */
 public class FileDealing extends ArrayList<String> {
 	private static final long serialVersionUID = 1L;
 

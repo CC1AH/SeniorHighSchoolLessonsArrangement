@@ -5,8 +5,9 @@ import Setting.*;
 import SystemHandle.*;
 
 /**
- * 
- * @author 邢国浩 该文件演示了学生类的初始化和基本信息存储和修改
+ * 该文件是学生类
+ * 输入信息 获取课表
+ *
  */
 
 public class Stu {
@@ -15,13 +16,11 @@ public class Stu {
 	private int admiClass;
 	private Map<Integer, ArrayList<Choose>> teaClass;
 	// 键值（Integer）为教学班号（3个班一组），内容值(ArrayList<Choose>)为选择科目的数组。
-	// Map容器提供了根据内容（数 理 化）查找相关信息的功能，为以后对选择固定科目的学生的操作带来方便
+	//但是此处Map只有一个键值（其实只是方便查看而已，同时便于添加学生的其他信息（以后可能有需要？）） 
 	private Sex sex;
 
 	// 构造器1
-	public Stu(String NAME, String SEX, String ID, int ADMICLASS, String CHOSENSUBS) throws Exception {// 输入姓名 性别 ID
-																										// 行政班号
-																										// 选择科目（使用空格分隔）
+	public Stu(String NAME, String SEX, String ID, int ADMICLASS, String CHOSENSUBS) throws Exception {// 输入姓名 性别 ID 行政班号 选择科目（使用空格分隔）
 		name = NAME;
 		id = ID;
 		admiClass = ADMICLASS;
@@ -43,12 +42,13 @@ public class Stu {
 	// 构造器2 该构造器只接受一个字符串：主要便于文件操作
 	public Stu(String InfoSet) throws Exception {
 		String[] arr = InfoSet.split(" "); // 或\\w+
-		if (arr.length != 7)
+		try {
+			if (arr.length != 7)
 			throw new Exception("InfoSetLengthWrong");// 输入信息的集合必须包含以空格分割的七个单词 对应关系见上一个构造方法
 		name = arr[0];
 		id = arr[2];
 		admiClass = Integer.parseInt(arr[3]);
-		try {
+		
 			sex = Sex.valueOf(arr[1]);
 			ArrayList<Choose> chosenSub = new ArrayList<Choose>(3);
 			teaClass = new TreeMap<Integer, ArrayList<Choose>>();
@@ -58,6 +58,7 @@ public class Stu {
 			teaClass.put(admiClass % 3, chosenSub);
 		} catch (Exception e) {
 			System.out.println(e);
+			e.printStackTrace();
 		}
 	}
 
@@ -70,20 +71,7 @@ public class Stu {
 		sex = u1.sex;
 	}
 
-	public StuTable get() {
-		/* to be filled */
-		return new StuTable();
-	}
-
-	public void showInfo() {
-		System.out.println(name + "的基本信息：");
-		System.out.println(id + " " + admiClass + " " + sex);
-		System.out.println("选课情况：");
-		for (ArrayList<Choose> i : teaClass.values()) {
-			System.out.println(i);
-		}
-		System.out.println("**********");
-	}
+	
 
 	public String getName() {
 		return name;
@@ -100,11 +88,30 @@ public class Stu {
 	public Sex getSex() {
 		return sex;
 	}
+	
+	
+	
+	public void showInfo() {
+		System.out.println(name + "的基本信息：");
+		System.out.println(id + " " + admiClass + " " + sex);
+		System.out.println("选课情况：");
+		for (ArrayList<Choose> i : teaClass.values()) {
+			System.out.println(i);
+		}
+		System.out.println("**********");
+	}
 
-	// 测试程序 输入学生的基本信息并打出选择特定科目的学生姓名
-	public static void main(String args[]) throws Exception {
+	public StuTable get() {
+		return (StuTable) new StuTable("myTable").process(this);
+		//处理端的process方法填充新建的课表。由该生指定课表的名称(myTable)
+	}
+
+	
+
+	// 内部测试程序1 输入学生的基本信息并打出 并实现特征选择
+	public static void StuInTest1() throws Exception {
 		FileDealing fl = new FileDealing(
-				"D:\\RES\\MainLep\\SeniorHighSchoolLessonsArrangement\\SeniorHighSchoolLessonsArrangement\\src\\ex.txt");
+				"D:\\RES\\MainLep\\SeniorHighSchoolLessonsArrangement\\SeniorHighSchoolLessonsArrangement\\src\\StuExample.txt");
 
 		ArrayList<Stu> stus = new ArrayList<Stu>();
 		for (int i = 0; i < 100; ++i)
@@ -125,5 +132,10 @@ public class Stu {
 				}
 			}
 		}
+	}
+	
+	//单元测试台
+	public static void main(String args[]) throws Exception {
+		StuInTest1();
 	}
 }

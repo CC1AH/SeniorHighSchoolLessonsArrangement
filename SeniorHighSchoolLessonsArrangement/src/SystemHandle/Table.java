@@ -1,10 +1,14 @@
 package SystemHandle;
-
+/**
+ * 虚类Table 不涉及具体实现
+ * 无测试台
+ *
+ */
 public abstract class Table {
 	private String tableId;
 	private static int MCN = 4;
 	private static int ACN = 4;
-
+	
 	public Table(String TABLEID) {
 		tableId = TABLEID;
 	}
@@ -15,5 +19,5 @@ public abstract class Table {
 		this.ACN = ACN;
 	}
 
-	public abstract void process();
+	public abstract Table process(Object s1);
 }
