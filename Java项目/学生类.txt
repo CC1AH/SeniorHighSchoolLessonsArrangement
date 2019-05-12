@@ -1,0 +1,156 @@
+package CustomerHandle; 
+2 
+ 
+3 import java.util.*; 
+4 import Setting.*; 
+5 import SystemHandle.*; 
+6 
+ 
+7 /** 
+8  * 该文件是学生类 
+9  * 输入信息 获取课表 
+10  * 
+11  */ 
+12 
+ 
+13 public class Stu { 
+14 	private String name; 
+15 	private String id; 
+16 	private int admiClass; 
+17 	private Map<Integer, ArrayList<Choose>> teaClass; 
+18 	// 键值（Integer）为教学班号（3个班一组），内容值(ArrayList<Choose>)为选择科目的数组。 
+19 	//但是此处Map只有一个键值（其实只是方便查看而已，同时便于添加学生的其他信息（以后可能有需要？））  
+20 	private Sex sex; 
+21 
+ 
+22 	// 构造器1 
+23 	public Stu(String NAME, String SEX, String ID, int ADMICLASS, String CHOSENSUBS) throws Exception {// 输入姓名 性别 ID 行政班号 选择科目（使用空格分隔） 
+24 		name = NAME; 
+25 		id = ID; 
+26 		admiClass = ADMICLASS; 
+27 		try { 
+28 			sex = Sex.valueOf(SEX); 
+29 			String[] temp = CHOSENSUBS.split(" "); 
+30 			if (temp.length != 3) 
+31 				throw new Exception("ChosenSubLengthWrong");// 每个学生只能选择三门课 
+32 			ArrayList<Choose> chosenSub = new ArrayList<Choose>(3); 
+33 			teaClass = new TreeMap<Integer, ArrayList<Choose>>(); 
+34 			for (String i : temp) 
+35 				chosenSub.add(Choose.valueOf(i)); 
+36 			teaClass.put(admiClass % 3, chosenSub); 
+37 		} catch (Exception e) { 
+38 			System.out.println(e); 
+39 		} 
+40 	} 
+41 
+ 
+42 	// 构造器2 该构造器只接受一个字符串：主要便于文件操作 
+43 	public Stu(String InfoSet) throws Exception { 
+44 		String[] arr = InfoSet.split(" "); // 或\\w+ 
+45 		try { 
+46 			if (arr.length != 7) 
+47 			throw new Exception("InfoSetLengthWrong");// 输入信息的集合必须包含以空格分割的七个单词 对应关系见上一个构造方法 
+48 		name = arr[0]; 
+49 		id = arr[2]; 
+50 		admiClass = Integer.parseInt(arr[3]); 
+51 		 
+52 			sex = Sex.valueOf(arr[1]); 
+53 			ArrayList<Choose> chosenSub = new ArrayList<Choose>(3); 
+54 			teaClass = new TreeMap<Integer, ArrayList<Choose>>(); 
+55 			for (int i = 4; i < 7; ++i) 
+56 				chosenSub.add(Choose.valueOf(arr[i])); 
+57 			// 程序需要添加的功能：检查三个科目是否有重复（例：生物 生物 历史） 
+58 			teaClass.put(admiClass % 3, chosenSub); 
+59 		} catch (Exception e) { 
+60 			System.out.println(e); 
+61 			e.printStackTrace(); 
+62 		} 
+63 	} 
+64 
+ 
+65 	public void upload(String NAME, String SEX, String ID, int ADMICLASS, String CHOSENSUBS) throws Exception { 
+66 		Stu u1 = new Stu(NAME, SEX, ID, ADMICLASS, CHOSENSUBS); 
+67 		name = u1.name; 
+68 		id = u1.id; 
+69 		admiClass = u1.admiClass; 
+70 		teaClass = u1.teaClass; 
+71 		sex = u1.sex; 
+72 	} 
+73 
+ 
+74 	 
+75 
+ 
+76 	public String getName() { 
+77 		return name; 
+78 	} 
+79 
+ 
+80 	public String getID() { 
+81 		return id; 
+82 	} 
+83 
+ 
+84 	public Map<Integer, ArrayList<Choose>> getTeaClass() { 
+85 		return teaClass; 
+86 	} 
+87 
+ 
+88 	public Sex getSex() { 
+89 		return sex; 
+90 	} 
+91 	 
+92 	 
+93 	 
+94 	public void showInfo() { 
+95 		System.out.println(name + "的基本信息："); 
+96 		System.out.println(id + " " + admiClass + " " + sex); 
+97 		System.out.println("选课情况："); 
+98 		for (ArrayList<Choose> i : teaClass.values()) { 
+99 			System.out.println(i); 
+100 		} 
+101 		System.out.println("**********"); 
+102 	} 
+103 
+ 
+104 	public StuTable get() { 
+105 		return (StuTable) new StuTable("myTable").process(this); 
+106 		//处理端的process方法填充新建的课表。由该生指定课表的名称(myTable) 
+107 	} 
+108 
+ 
+109 	 
+110 
+ 
+111 	// 内部测试程序1 输入学生的基本信息并打出 并实现特征选择 
+112 	public static void StuInTest1() throws Exception { 
+113 		FileDealing fl = new FileDealing( 
+114 				"D:\\RES\\MainLep\\SeniorHighSchoolLessonsArrangement\\SeniorHighSchoolLessonsArrangement\\src\\StuExample.txt"); 
+115 
+ 
+116 		ArrayList<Stu> stus = new ArrayList<Stu>(); 
+117 		for (int i = 0; i < 100; ++i) 
+118 			stus.add(new Stu(fl.get(i))); 
+119 		for (Stu f : stus) { 
+120 			f.showInfo(); 
+121 		} 
+122 		System.out.println("其中选择物理的学生有"); 
+123 		int counter = 1; 
+124 		for (Stu f : stus) { 
+125 			for (ArrayList<Choose> i : f.getTeaClass().values()) { 
+126 				if (i.contains(Choose.physics)) { 
+127 					System.out.print(f.name + " "); 
+128 					if (counter % 10 == 0) { 
+129 						System.out.println(""); 
+130 					} 
+131 					counter++; 
+132 				} 
+133 			} 
+134 		} 
+135 	} 
+136 	 
+137 	//单元测试台 
+138 	public static void main(String args[]) throws Exception { 
+139 		StuInTest1(); 
+140 	} 
+141 } 

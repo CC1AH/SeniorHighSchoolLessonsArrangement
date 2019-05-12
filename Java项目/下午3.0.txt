@@ -1,0 +1,895 @@
+package readSome;
+
+import java.io.BufferedInputStream; 
+import java.io.BufferedReader; 
+import java.io.File; 
+import java.io.FileInputStream; 
+import java.io.InputStreamReader; 
+import java.io.Reader; 
+
+
+
+/*该程序将对选择的科目（下午）进行分班与安排老师
+ * 对六门选择性的科目进行编号，物理为1.化学为2，生物为3，历史为4，地理为5，政治为6
+ * 要求学生自主选择想要在下午第一节，第二节，第四节想要上的科目（分四天，即周一，周二，周三，周五），剩下空的课为学校自由安排课程，可以上班课，团课等
+ */
+import java.util.*;
+//注：以下class中的三维数组中第一维代表的是星期几，如0代表星期一，1代表星期二，2代表星期三，3代表星期五，共四部分，星期四下午是校方自己安排的课
+//第二维代表的是下午第几节课，0代表的是下午第一节课，1代表的是下午第二节课，2代表的是下午第四节课，第三节课为校方自己安排的课
+class Student{
+	String name;
+	int studentNumberOfSchool;
+	int[][] mySelectiveCourse=new int[4][3];//四天每天三门课，里面的内容代表的是星期几第几节所选的课，比如mySelectiveCourse[1][2]=3意思是星期二第四节选的是生物课
+	int[] firstClassCourseNumber=new int[4];//下午第一节课，所选该科目的编号，比如星期一下午选了物理，对选物理的同学进行分班，该同学所在班的编号
+	int[] firstClassTeacher=new int[4];//老师的编号
+	int[] secondClassCourseNumber=new int[4];//下午第二节课
+	int[] secondClassTeacher=new int[4];
+	int[] fourthClassCourseNumber=new int[4];//下午第四节课
+	int[] fourthClassTeacher=new int[4];
+	//各科目都安排有number，比如星期一第一节课选物理的同学有一个ID（即在所选科目的编号），比如星期一下午物理共84人选，他在这84人中的编号为四号，。总共有四天
+	int[][][] studentIDOfEachSelectiveClass=new int[4][3][6];
+	
+}
+
+class PhysicsTeacher{
+	int[][][] studentNumberOfPhysics=new int[4][3][200];
+}
+
+class ChemistryTeacher{
+	int[][][] studentNumberOfChemistry=new int[4][3][200];
+}
+
+class BiologyTeacher{
+	int[][][] studentNumberOfBiology=new int[4][3][200];
+}
+
+class HistoryTeacher{
+	int[][][] studentNumberOfHistory=new int[4][3][200];
+}
+
+class GeographyTeacher{
+	int[][][] studentNumberOfGeography=new int[4][3][200];
+}
+
+class PoliticsTeacher{
+	int[][][] studentNumberOfPolitics=new int[4][3][200];
+}
+
+
+class SelectiveClasses{
+	int[][][] numberOfCourse=new int[4][3][6];//这个类的作用就是统计每节课选各科目的学生的数目
+	
+}
+
+
+
+
+public class SelectiveClassArrangeAtNoon {
+	static Student[] realStudent=new Student[120];
+	
+	  public static void readTxtFile(String filePath){ 
+		  
+		    try { 
+		        String encoding="GBK"; 
+		        File file=new File(filePath); 
+		        if(file.isFile() && file.exists()){ //判断文件是否存在 
+		          InputStreamReader read = new InputStreamReader( 
+		          new FileInputStream(file),encoding);//考虑到编码格式 
+		          BufferedReader bufferedReader = new BufferedReader(read); 
+		          String lineTxt = null; 
+		          int counter=0;
+		          while((lineTxt = bufferedReader.readLine()) != null){ 
+		        	  String a[]=lineTxt.split("	");
+		        	  realStudent[counter].studentNumberOfSchool=Integer.parseInt(a[0]);
+		        	  realStudent[counter].mySelectiveCourse[0][0]=Integer.parseInt(a[1]);
+		        	  realStudent[counter].mySelectiveCourse[0][1]=Integer.parseInt(a[2]);
+		        	  realStudent[counter].mySelectiveCourse[0][2]=Integer.parseInt(a[3]);
+		        	  counter++;
+		          } 
+		          read.close(); 
+		    }else{ 
+		      System.out.println("找不到指定的文件"); 
+		    } 
+		    } catch (Exception e) { 
+		      System.out.println("读取文件内容出错"); 
+		      e.printStackTrace(); 
+		    } 
+		    	
+		  } 
+		    
+		  public static void go(){ 
+			  for(int i=0;i<120;i++) {
+				  realStudent[i]=new Student();
+			  }
+		    String filePath = "E:\\input.txt"; 
+		//   "res/"; 
+		    readTxtFile(filePath); 
+		  } 
+
+	public static void main(String[] args) {
+		
+	
+			go();
+			
+		
+		 
+	
+	
+			int studentNumberOfSchoolInt=100;
+		/*System.out.println("请输入学校学生总数");
+		Scanner reader1=new Scanner(System.in);
+		String studentNumberOfSchoolStr=reader1.next();
+		int studentNumberOfSchoolInt=Integer.parseInt(studentNumberOfSchoolStr);*/
+		/*Student[] realStudent=new Student[studentNumberOfSchoolInt];
+		for(int i=0;i<studentNumberOfSchoolInt;i++) {
+			realStudent[i]=new Student();
+		}*/
+		
+		
+		
+		//该部分为统计各科目教师的数目，physicsNumberOfTeacherInt=0这是初始化
+		int physicsNumberOfTeacherInt=5;
+		int chemistryNumberOfTeacherInt=5;
+		int biologyNumberOfTeacherInt=5;
+		int historyNumberOfTeacherInt=5;
+		int geographyNumberOfTeacherInt=5;
+		int politicsNumberOfTeacherInt=5;
+		
+		PhysicsTeacher[] realPhysicsTeacher=new PhysicsTeacher[physicsNumberOfTeacherInt];
+		for(int i=0;i<physicsNumberOfTeacherInt;i++) {
+			realPhysicsTeacher[i]=new PhysicsTeacher();
+		}
+		
+		ChemistryTeacher[] realChemistryTeacher=new ChemistryTeacher[chemistryNumberOfTeacherInt];
+		for(int i=0;i<chemistryNumberOfTeacherInt;i++) {
+			realChemistryTeacher[i]=new ChemistryTeacher();
+		}
+		
+		BiologyTeacher[] realBiologyTeacher=new BiologyTeacher[biologyNumberOfTeacherInt];
+		for(int i=0;i<biologyNumberOfTeacherInt;i++) {
+			realBiologyTeacher[i]=new BiologyTeacher();
+		}
+		
+		HistoryTeacher[] realHistoryTeacher=new HistoryTeacher[historyNumberOfTeacherInt];
+		for(int i=0;i<historyNumberOfTeacherInt;i++) {
+			realHistoryTeacher[i]=new HistoryTeacher();
+		}
+		
+		GeographyTeacher[] realGeographyTeacher=new GeographyTeacher[geographyNumberOfTeacherInt];
+		for(int i=0;i<geographyNumberOfTeacherInt;i++) {
+			realGeographyTeacher[i]=new GeographyTeacher();
+		}
+		
+		PoliticsTeacher[] realPoliticsTeacher=new PoliticsTeacher[politicsNumberOfTeacherInt];
+		for(int i=0;i<politicsNumberOfTeacherInt;i++) {
+			realPoliticsTeacher[i]=new PoliticsTeacher();
+		}//创建各科目老师对象完成，各科目老师用所对应的编号表示
+		
+		SelectiveClasses realSelectiveClasses=new SelectiveClasses();
+		for(int i=0;i<4;i++) {
+			for(int j=0;j<3;j++) {
+				for(int k=0;k<6;k++) {
+					realSelectiveClasses.numberOfCourse[i][j][k]=0;
+				}
+			}
+		}//这是初始化realSelectiveClasses的代码
+	
+		
+		
+		
+		
+		
+		
+		//先统计每一节课上各科目的人数
+		
+		
+		for(int i=0;i<4;i++) {//i一周四天
+			for(int j=0;j<3;j++) {//每天三节课
+				int physicsNumber=0;
+				int chemistryNumber=0;
+				int biologyNumber=0;
+				int historyNumber=0;
+				int geographyNumber=0;
+				int politicsNumber=0;
+				
+				for(int k=0;k<studentNumberOfSchoolInt;k++) {
+					switch(realStudent[k].mySelectiveCourse[i][j]) {
+					case 1:
+						physicsNumber++;
+						break;
+					case 2:
+						chemistryNumber++;
+						break;
+					case 3:
+						biologyNumber++;
+						break;
+					case 4:
+						historyNumber++;
+						break;
+					case 5:
+						geographyNumber++;
+						break;
+					case 6:
+						politicsNumber++;
+						break;
+					
+					}
+				}
+				
+				//将信息存在numberOfCourse中
+				realSelectiveClasses.numberOfCourse[i][j][0]=physicsNumber;//意思是星期几第几节选物理课的人数
+				realSelectiveClasses.numberOfCourse[i][j][1]=chemistryNumber;
+				realSelectiveClasses.numberOfCourse[i][j][2]=biologyNumber;
+				realSelectiveClasses.numberOfCourse[i][j][3]=historyNumber;
+				realSelectiveClasses.numberOfCourse[i][j][4]=geographyNumber;
+				realSelectiveClasses.numberOfCourse[i][j][5]=politicsNumber;
+				
+			}
+		}
+		
+		
+		//初始化学生selectiveClass的ID
+		for(int i=0;i<studentNumberOfSchoolInt;i++) {//遍历每一位学生
+			for(int j=0;j<4;j++) {//一周四天
+				for(int k=0;k<3;k++) {//每天三节课
+					for(int m=0;m<6;m++) {//设置了六门课的ID，下面将ID全部初始化为0
+						realStudent[i].studentIDOfEachSelectiveClass[j][k][m]=0;
+					}
+				}
+			}
+			
+		}
+		
+		//初始化学生中的老师信息
+		for(int i=0;i<studentNumberOfSchoolInt;i++) {//遍历每一位学生
+			for(int j=0;j<4;j++) {//一周四天
+				realStudent[i].firstClassTeacher[j]=0;//i=1，j=1代表第二位学生周二第一节课的老师初始化为0
+				realStudent[i].secondClassTeacher[j]=0;
+				realStudent[i].fourthClassTeacher[j]=0;
+			}
+		}
+		
+		
+		
+	
+		//首先对选第一节课的学生进行编号
+		for(int i=0;i<4;i++) {//一周四天
+		
+				int physicsOrder=1;
+				int chemistryOrder=1;
+				int biologyOrder=1;
+				int historyOrder=1;
+				int geographyOrder=1;
+				int politicsOrder=1;
+				
+				for(int k=0;k<studentNumberOfSchoolInt;k++) {
+					if(realStudent[k].mySelectiveCourse[i][0]==1) {//比如i=1代表的是星期二，k=3代表的是第四位学生
+						realStudent[k].studentIDOfEachSelectiveClass[i][0][0]=physicsOrder;//studentIDOfEachSelectiveClass第一个代表星期几，第二个0是下午第一节课，第三个0代表的是物理
+						physicsOrder++;
+					}
+					else if(realStudent[k].mySelectiveCourse[i][0]==2) {
+						realStudent[k].studentIDOfEachSelectiveClass[i][0][1]=chemistryOrder;
+						chemistryOrder++;
+					}
+					else if(realStudent[k].mySelectiveCourse[i][0]==3) {
+						realStudent[k].studentIDOfEachSelectiveClass[i][0][2]=biologyOrder;
+						biologyOrder++;
+					}
+					else if(realStudent[k].mySelectiveCourse[i][0]==4) {
+						realStudent[k].studentIDOfEachSelectiveClass[i][0][3]=historyOrder;
+						historyOrder++;
+					}
+					else if(realStudent[k].mySelectiveCourse[i][0]==5) {
+						realStudent[k].studentIDOfEachSelectiveClass[i][0][4]=geographyOrder;
+						geographyOrder++;
+					}
+					else {
+						realStudent[k].studentIDOfEachSelectiveClass[i][0][5]=politicsOrder;
+						politicsOrder++;
+					}
+					
+				}
+		}
+	
+		
+		//其次对选第二节课的学生进行编号
+				for(int i=0;i<4;i++) {
+				
+						int physicsOrder=1;
+						int chemistryOrder=1;
+						int biologyOrder=1;
+						int historyOrder=1;
+						int geographyOrder=1;
+						int politicsOrder=1;
+						
+						for(int k=0;k<studentNumberOfSchoolInt;k++) {
+							if(realStudent[k].mySelectiveCourse[i][1]==1) {
+								realStudent[k].studentIDOfEachSelectiveClass[i][1][0]=physicsOrder;
+								physicsOrder++;
+							}
+							else if(realStudent[k].mySelectiveCourse[i][1]==2) {
+								realStudent[k].studentIDOfEachSelectiveClass[i][1][1]=chemistryOrder;
+								chemistryOrder++;
+							}
+							else if(realStudent[k].mySelectiveCourse[i][1]==3) {
+								realStudent[k].studentIDOfEachSelectiveClass[i][1][2]=biologyOrder;
+								biologyOrder++;
+							}
+							else if(realStudent[k].mySelectiveCourse[i][1]==4) {
+								realStudent[k].studentIDOfEachSelectiveClass[i][1][3]=historyOrder;
+								historyOrder++;
+							}
+							else if(realStudent[k].mySelectiveCourse[i][1]==5) {
+								realStudent[k].studentIDOfEachSelectiveClass[i][1][4]=geographyOrder;
+								geographyOrder++;
+							}
+							else {
+								realStudent[k].studentIDOfEachSelectiveClass[i][1][5]=politicsOrder;
+								politicsOrder++;
+							}
+							
+						}
+				}
+				
+				//最后对选第四节课的学生进行编号
+				for(int i=0;i<4;i++) {
+				
+						int physicsOrder=1;
+						int chemistryOrder=1;
+						int biologyOrder=1;
+						int historyOrder=1;
+						int geographyOrder=1;
+						int politicsOrder=1;
+						
+						for(int k=0;k<studentNumberOfSchoolInt;k++) {
+							if(realStudent[k].mySelectiveCourse[i][2]==1) {
+								realStudent[k].studentIDOfEachSelectiveClass[i][2][0]=physicsOrder;
+								physicsOrder++;
+							}
+							else if(realStudent[k].mySelectiveCourse[i][2]==2) {
+								realStudent[k].studentIDOfEachSelectiveClass[i][2][1]=chemistryOrder;
+								chemistryOrder++;
+							}
+							else if(realStudent[k].mySelectiveCourse[i][2]==3) {
+								realStudent[k].studentIDOfEachSelectiveClass[i][2][2]=biologyOrder;
+								biologyOrder++;
+							}
+							else if(realStudent[k].mySelectiveCourse[i][2]==4) {
+								realStudent[k].studentIDOfEachSelectiveClass[i][2][3]=historyOrder;
+								historyOrder++;
+							}
+							else if(realStudent[k].mySelectiveCourse[i][2]==5) {
+								realStudent[k].studentIDOfEachSelectiveClass[i][2][4]=geographyOrder;
+								geographyOrder++;
+							}
+							else {
+								realStudent[k].studentIDOfEachSelectiveClass[i][2][5]=politicsOrder;
+								politicsOrder++;
+							}
+							
+						}
+				}
+				
+				/*********************该部分对物理进行安排************************/
+				//下午第一节选物理学生安排,对第一节学生物理编号进行分班安排
+				//注意学生的编号是从1开始的
+				for(int n=0;n<4;n++) {//对一周星期几的第一节物理课进行安排
+					int iAdd=0;
+					for(int m=0;m<physicsNumberOfTeacherInt;m++) {//对每一位物理老师安排对应的学生
+						
+						for(int i=1+iAdd;i<realSelectiveClasses.numberOfCourse[n][0][0];i+=physicsNumberOfTeacherInt) {
+							//i代表的是学生号码（此处指的是在第n天第一节物理课的编号），i<的那个参数代表第n天下午第一节选物理课的总人数，
+								realPhysicsTeacher[m].studentNumberOfPhysics[n][0][(i-1-iAdd)/physicsNumberOfTeacherInt]=i;//把第一节选物理的学生编号存在相应老师的类中
+								for(int j=0;j<studentNumberOfSchoolInt;j++) {//实现第一节选物理的学生中有对应老师的编号与第一节选物理的学生的班级安排
+									if(realStudent[j].studentIDOfEachSelectiveClass[n][0][0]==i) {
+										realStudent[j].firstClassTeacher[n]=m;
+										realStudent[j].firstClassCourseNumber[n]=m;
+										
+									}
+								}
+								
+							}
+						iAdd++;
+						
+					}
+				}
+				
+				
+				//下午第二节选物理学生安排,对第二节学生物理编号进行分班安排
+				//注意学生的编号是从1开始的
+				for(int n=0;n<4;n++) {//对一周星期几的第二节物理课进行安排
+					int iAdd=0;
+					for(int m=0;m<physicsNumberOfTeacherInt;m++) {//对每一位物理老师安排对应的学生
+						
+						for(int i=1+iAdd;i<realSelectiveClasses.numberOfCourse[n][1][0];i+=physicsNumberOfTeacherInt) {
+							//i代表的是学生号码（此处指的是在第n天第二节物理课的编号），i<的那个参数代表第n天下午第二节选物理课的总人数，
+								realPhysicsTeacher[m].studentNumberOfPhysics[n][1][(i-1-iAdd)/physicsNumberOfTeacherInt]=i;//把第二节选物理的学生编号存在相应老师的类中
+								for(int j=0;j<studentNumberOfSchoolInt;j++) {//实现第二节选物理的学生中有对应老师的编号与第二节选物理的学生的班级安排
+									if(realStudent[j].studentIDOfEachSelectiveClass[n][1][0]==i) {
+										realStudent[j].secondClassTeacher[n]=m;
+										realStudent[j].secondClassCourseNumber[n]=m;
+										break;
+									}
+								}
+								
+							}
+						iAdd++;
+						
+					}
+				}
+				
+				//下午第四节选物理学生安排,对第四节学生物理编号进行分班安排
+				//注意学生的编号是从1开始的
+				for(int n=0;n<4;n++) {//对一周星期几的第四节物理课进行安排
+					int iAdd=0;
+					for(int m=0;m<physicsNumberOfTeacherInt;m++) {//对每一位物理老师安排对应的学生
+						
+						for(int i=1+iAdd;i<realSelectiveClasses.numberOfCourse[n][2][0];i+=physicsNumberOfTeacherInt) {
+							//i代表的是学生号码（此处指的是在第n天第四节物理课的编号），i<的那个参数代表第n天下午第四节选物理课的总人数，
+								realPhysicsTeacher[m].studentNumberOfPhysics[n][2][(i-1-iAdd)/physicsNumberOfTeacherInt]=i;//把第四节选物理的学生编号存在相应老师的类中
+								for(int j=0;j<studentNumberOfSchoolInt;j++) {//实现第四节选物理的学生中有对应老师的编号与第四节选物理的学生的班级安排
+									if(realStudent[j].studentIDOfEachSelectiveClass[n][2][0]==i) {
+										realStudent[j].fourthClassTeacher[n]=m;
+										realStudent[j].fourthClassCourseNumber[n]=m;
+										break;
+									}
+								}
+								
+							}
+						iAdd++;
+						
+					}
+				}
+				/*********************该部分对物理进行安排************************/
+				
+				/*********************该部分对化学进行安排************************/
+				for(int n=0;n<4;n++) {//对一周星期几的第一节化学课进行安排
+					int iAdd=0;
+					for(int m=0;m<chemistryNumberOfTeacherInt;m++) {//对每一位化学老师安排对应的学生
+						
+						for(int i=1+iAdd;i<realSelectiveClasses.numberOfCourse[n][0][1];i+=chemistryNumberOfTeacherInt) {
+							//i代表的是学生号码（此处指的是在第n天第一节化学课的编号），i<的那个参数代表第n天下午第一节选化学课的总人数，
+							realChemistryTeacher[m].studentNumberOfChemistry[n][0][(i-1-iAdd)/chemistryNumberOfTeacherInt]=i;//把第一节选化学的学生编号存在相应老师的类中
+								for(int j=0;j<studentNumberOfSchoolInt;j++) {//实现第一节选化学的学生中有对应老师的编号与第一节选化学的学生的班级安排
+									if(realStudent[j].studentIDOfEachSelectiveClass[n][0][1]==i) {
+										realStudent[j].firstClassTeacher[n]=m;
+										realStudent[j].firstClassCourseNumber[n]=m;
+										break;
+									}
+								}
+								
+							}
+						iAdd++;
+						
+					}
+				}
+				
+				for(int n=0;n<4;n++) {//对一周星期几的第二节化学课进行安排
+					int iAdd=0;
+					for(int m=0;m<chemistryNumberOfTeacherInt;m++) {//对每一位化学老师安排对应的学生
+						
+						for(int i=1+iAdd;i<realSelectiveClasses.numberOfCourse[n][1][1];i+=chemistryNumberOfTeacherInt) {
+							//i代表的是学生号码（此处指的是在第n天第二节化学课的编号），i<的那个参数代表第n天下午第二节选化学课的总人数，
+							realChemistryTeacher[m].studentNumberOfChemistry[n][1][(i-1-iAdd)/chemistryNumberOfTeacherInt]=i;//把第二节选化学的学生编号存在相应老师的类中
+								for(int j=0;j<studentNumberOfSchoolInt;j++) {//实现第二节选化学的学生中有对应老师的编号与第二节选化学的学生的班级安排
+									if(realStudent[j].studentIDOfEachSelectiveClass[n][1][1]==i) {
+										realStudent[j].secondClassTeacher[n]=m;
+										realStudent[j].secondClassCourseNumber[n]=m;
+										break;
+									}
+								}
+								
+							}
+						iAdd++;
+						
+					}
+				}
+				
+				for(int n=0;n<4;n++) {//对一周星期几的第四节化学课进行安排
+					int iAdd=0;
+					for(int m=0;m<chemistryNumberOfTeacherInt;m++) {//对每一位化学老师安排对应的学生
+						
+						for(int i=1+iAdd;i<realSelectiveClasses.numberOfCourse[n][2][1];i+=chemistryNumberOfTeacherInt) {
+							//i代表的是学生号码（此处指的是在第n天第四节化学课的编号），i<的那个参数代表第n天下午第四节选化学课的总人数，
+							realChemistryTeacher[m].studentNumberOfChemistry[n][2][(i-1-iAdd)/chemistryNumberOfTeacherInt]=i;//把第四节选化学的学生编号存在相应老师的类中
+								for(int j=0;j<studentNumberOfSchoolInt;j++) {//实现第四节选化学的学生中有对应老师的编号与第四节选化学的学生的班级安排
+									if(realStudent[j].studentIDOfEachSelectiveClass[n][2][1]==i) {
+										realStudent[j].fourthClassTeacher[n]=m;
+										realStudent[j].fourthClassCourseNumber[n]=m;
+										break;
+									}
+								}
+								
+							}
+						iAdd++;
+						
+					}
+				}
+				
+				/*********************该部分对化学进行安排************************/
+				
+				/*********************该部分对生物进行安排************************/
+				for(int n=0;n<4;n++) {
+					int iAdd=0;
+					for(int m=0;m<biologyNumberOfTeacherInt;m++) {
+						
+						for(int i=1+iAdd;i<realSelectiveClasses.numberOfCourse[n][0][2];i+=biologyNumberOfTeacherInt) {
+							realBiologyTeacher[m].studentNumberOfBiology[n][0][(i-1-iAdd)/biologyNumberOfTeacherInt]=i;
+								for(int j=0;j<studentNumberOfSchoolInt;j++) {
+									if(realStudent[j].studentIDOfEachSelectiveClass[n][0][2]==i) {
+										realStudent[j].firstClassTeacher[n]=m;
+										realStudent[j].firstClassCourseNumber[n]=m;
+										break;
+									}
+								}
+								
+							}
+						iAdd++;
+						
+					}
+				}
+				
+				for(int n=0;n<4;n++) {
+					int iAdd=0;
+					for(int m=0;m<biologyNumberOfTeacherInt;m++) {
+						
+						for(int i=1+iAdd;i<realSelectiveClasses.numberOfCourse[n][1][2];i+=biologyNumberOfTeacherInt) {
+							realBiologyTeacher[m].studentNumberOfBiology[n][1][(i-1-iAdd)/biologyNumberOfTeacherInt]=i;
+								for(int j=0;j<studentNumberOfSchoolInt;j++) {
+									if(realStudent[j].studentIDOfEachSelectiveClass[n][1][2]==i) {
+										realStudent[j].secondClassTeacher[n]=m;
+										realStudent[j].secondClassCourseNumber[n]=m;
+										break;
+									}
+								}
+								
+							}
+						iAdd++;
+						
+					}
+				}
+				
+				for(int n=0;n<4;n++) {
+					int iAdd=0;
+					for(int m=0;m<biologyNumberOfTeacherInt;m++) {
+						
+						for(int i=1+iAdd;i<realSelectiveClasses.numberOfCourse[n][2][2];i+=biologyNumberOfTeacherInt) {
+							realBiologyTeacher[m].studentNumberOfBiology[n][2][(i-1-iAdd)/biologyNumberOfTeacherInt]=i;
+								for(int j=0;j<studentNumberOfSchoolInt;j++) {
+									if(realStudent[j].studentIDOfEachSelectiveClass[n][2][2]==i) {
+										realStudent[j].fourthClassTeacher[n]=m;
+										realStudent[j].fourthClassCourseNumber[n]=m;
+										break;
+									}
+								}
+								
+							}
+						iAdd++;
+						
+					}
+				}
+				
+				/*********************该部分对生物进行安排************************/
+				
+				/*********************该部分对历史进行安排************************/
+				for(int n=0;n<4;n++) {
+					int iAdd=0;
+					for(int m=0;m<historyNumberOfTeacherInt;m++) {
+					
+						for(int i=1+iAdd;i<realSelectiveClasses.numberOfCourse[n][0][3];i+=historyNumberOfTeacherInt) {
+							realHistoryTeacher[m].studentNumberOfHistory[n][0][(i-1-iAdd)/historyNumberOfTeacherInt]=i;
+								for(int j=0;j<studentNumberOfSchoolInt;j++) {
+									if(realStudent[j].studentIDOfEachSelectiveClass[n][0][3]==i) {
+										realStudent[j].firstClassTeacher[n]=m;
+										realStudent[j].firstClassCourseNumber[n]=m;
+										break;
+									}
+								}
+								
+							}
+						iAdd++;
+						
+					}
+				}
+				
+				for(int n=0;n<4;n++) {
+					int iAdd=0;
+					for(int m=0;m<historyNumberOfTeacherInt;m++) {
+						
+						for(int i=1+iAdd;i<realSelectiveClasses.numberOfCourse[n][1][3];i+=historyNumberOfTeacherInt) {
+							realHistoryTeacher[m].studentNumberOfHistory[n][1][(i-1-iAdd)/historyNumberOfTeacherInt]=i;
+								for(int j=0;j<studentNumberOfSchoolInt;j++) {
+									if(realStudent[j].studentIDOfEachSelectiveClass[n][1][3]==i) {
+										realStudent[j].secondClassTeacher[n]=m;
+										realStudent[j].secondClassCourseNumber[n]=m;
+										break;
+									}
+								}
+								
+							}
+						iAdd++;
+						
+					}
+				}
+				
+				for(int n=0;n<4;n++) {
+					int iAdd=0;
+					for(int m=0;m<historyNumberOfTeacherInt;m++) {
+						
+						for(int i=1+iAdd;i<realSelectiveClasses.numberOfCourse[n][2][3];i+=historyNumberOfTeacherInt) {
+							realHistoryTeacher[m].studentNumberOfHistory[n][2][(i-1-iAdd)/historyNumberOfTeacherInt]=i;
+								for(int j=0;j<studentNumberOfSchoolInt;j++) {
+									if(realStudent[j].studentIDOfEachSelectiveClass[n][2][3]==i) {
+										realStudent[j].fourthClassTeacher[n]=m;
+										realStudent[j].fourthClassCourseNumber[n]=m;
+										break;
+									}
+								}
+								
+							}
+						iAdd++;
+						
+					}
+				}
+				
+				/*********************该部分对历史进行安排************************/
+				
+				/*********************该部分对地理进行安排************************/
+				for(int n=0;n<4;n++) {
+					int iAdd=0;
+					for(int m=0;m<geographyNumberOfTeacherInt;m++) {
+					
+						for(int i=1+iAdd;i<realSelectiveClasses.numberOfCourse[n][0][4];i+=geographyNumberOfTeacherInt) {
+							realGeographyTeacher[m].studentNumberOfGeography[n][0][(i-1-iAdd)/geographyNumberOfTeacherInt]=i;
+								for(int j=0;j<studentNumberOfSchoolInt;j++) {
+									if(realStudent[j].studentIDOfEachSelectiveClass[n][0][4]==i) {
+										realStudent[j].firstClassTeacher[n]=m;
+										realStudent[j].firstClassCourseNumber[n]=m;
+										break;
+									}
+								}
+								
+							}
+						iAdd++;
+						
+					}
+				}
+				
+				for(int n=0;n<4;n++) {
+					int iAdd=0;
+					for(int m=0;m<politicsNumberOfTeacherInt;m++) {
+						
+						for(int i=1+iAdd;i<realSelectiveClasses.numberOfCourse[n][1][4];i+=politicsNumberOfTeacherInt) {
+							realGeographyTeacher[m].studentNumberOfGeography[n][1][(i-1-iAdd)/politicsNumberOfTeacherInt]=i;
+								for(int j=0;j<studentNumberOfSchoolInt;j++) {
+									if(realStudent[j].studentIDOfEachSelectiveClass[n][1][4]==i) {
+										realStudent[j].secondClassTeacher[n]=m;
+										realStudent[j].secondClassCourseNumber[n]=m;
+										break;
+									}
+								}
+								
+							}
+						iAdd++;
+						
+					}
+				}
+				
+				for(int n=0;n<4;n++) {
+					int iAdd=0;
+					for(int m=0;m<politicsNumberOfTeacherInt;m++) {
+						
+						for(int i=1+iAdd;i<realSelectiveClasses.numberOfCourse[n][2][4];i+=politicsNumberOfTeacherInt) {
+							realGeographyTeacher[m].studentNumberOfGeography[n][2][(i-1-iAdd)/politicsNumberOfTeacherInt]=i;
+								for(int j=0;j<studentNumberOfSchoolInt;j++) {
+									if(realStudent[j].studentIDOfEachSelectiveClass[n][2][4]==i) {
+										realStudent[j].fourthClassTeacher[n]=m;
+										realStudent[j].fourthClassCourseNumber[n]=m;
+										break;
+									}
+								}
+								
+							}
+						iAdd++;
+						
+					}
+				}
+				
+				/*********************该部分对地理进行安排************************/
+				
+				/*********************该部分对政治进行安排************************/
+				for(int n=0;n<4;n++) {
+					int iAdd=0;
+					for(int m=0;m<politicsNumberOfTeacherInt;m++) {
+						
+						for(int i=1+iAdd;i<realSelectiveClasses.numberOfCourse[n][0][5];i+=politicsNumberOfTeacherInt) {
+							realPoliticsTeacher[m].studentNumberOfPolitics[n][0][(i-1-iAdd)/politicsNumberOfTeacherInt]=i;
+								for(int j=0;j<studentNumberOfSchoolInt;j++) {
+									if(realStudent[j].studentIDOfEachSelectiveClass[n][0][5]==i) {
+										realStudent[j].firstClassTeacher[n]=m;
+										realStudent[j].firstClassCourseNumber[n]=m;
+										break;
+									}
+								}
+								
+							}
+						iAdd++;
+						
+					}
+				}
+				
+				for(int n=0;n<4;n++) {
+					int iAdd=0;
+					for(int m=0;m<politicsNumberOfTeacherInt;m++) {
+					
+						for(int i=1+iAdd;i<realSelectiveClasses.numberOfCourse[n][1][5];i+=politicsNumberOfTeacherInt) {
+							realPoliticsTeacher[m].studentNumberOfPolitics[n][1][(i-1-iAdd)/politicsNumberOfTeacherInt]=i;
+								for(int j=0;j<studentNumberOfSchoolInt;j++) {
+									if(realStudent[j].studentIDOfEachSelectiveClass[n][1][5]==i) {
+										realStudent[j].secondClassTeacher[n]=m;
+										realStudent[j].secondClassCourseNumber[n]=m;
+										break;
+									}
+								}
+								
+							}
+						iAdd++;
+						
+					}
+				}
+				
+				for(int n=0;n<4;n++) {
+					int iAdd=0;
+					for(int m=0;m<politicsNumberOfTeacherInt;m++) {
+						
+						for(int i=1+iAdd;i<realSelectiveClasses.numberOfCourse[n][2][5];i+=politicsNumberOfTeacherInt) {
+							realPoliticsTeacher[m].studentNumberOfPolitics[n][2][(i-1-iAdd)/politicsNumberOfTeacherInt]=i;
+								for(int j=0;j<studentNumberOfSchoolInt;j++) {
+									if(realStudent[j].studentIDOfEachSelectiveClass[n][2][5]==i) {
+										realStudent[j].fourthClassTeacher[n]=m;
+										realStudent[j].fourthClassCourseNumber[n]=m;
+										break;
+									}
+								}
+								
+							}
+						iAdd++;
+						
+					}
+				}
+				
+				//以下部分为测试程序
+				System.out.println("以下部分为测试程序");
+				System.out.println();
+				System.out.println();
+				System.out.println("第一位物理老师下午第三节课的学生物理编号及学号");
+				for(int i=0;i<200;i++) {
+					if(realPhysicsTeacher[0].studentNumberOfPhysics[0][2][i]!=0) {
+						System.out.println("下午第三节学物理的学生物理编号"+realPhysicsTeacher[0].studentNumberOfPhysics[0][2][i]+"下午第一节学物理的学生学号"+convertFromIDOfEachClassToNumberOfSchool(2,0,realPhysicsTeacher[0].studentNumberOfPhysics[0][2][i]));
+					}
+					else {
+						break;
+					}
+				
+				}
+				System.out.println();
+				System.out.println();
+				System.out.println();
+				
+				
+				System.out.println("下午第一节学物理的总人数"+realSelectiveClasses.numberOfCourse[0][0][0]);
+				System.out.println("下午第一节学化学的总人数"+realSelectiveClasses.numberOfCourse[0][0][1]);
+				System.out.println("下午第一节学生物的总人数"+realSelectiveClasses.numberOfCourse[0][0][2]);
+				System.out.println("下午第一节学历史的总人数"+realSelectiveClasses.numberOfCourse[0][0][3]);
+				System.out.println("下午第一节学地理的总人数"+realSelectiveClasses.numberOfCourse[0][0][4]);
+				System.out.println("下午第一节学政治的总人数"+realSelectiveClasses.numberOfCourse[0][0][5]);
+				
+				System.out.println();
+				System.out.println();
+				System.out.println("下午第二节学物理的总人数"+realSelectiveClasses.numberOfCourse[0][1][0]);
+				System.out.println("下午第二节学化学的总人数"+realSelectiveClasses.numberOfCourse[0][1][1]);
+				System.out.println("下午第二节学生物的总人数"+realSelectiveClasses.numberOfCourse[0][1][2]);
+				System.out.println("下午第二节学历史的总人数"+realSelectiveClasses.numberOfCourse[0][1][3]);
+				System.out.println("下午第二节学地理的总人数"+realSelectiveClasses.numberOfCourse[0][1][4]);
+				System.out.println("下午第二节学政治的总人数"+realSelectiveClasses.numberOfCourse[0][1][5]);
+				
+				System.out.println();
+				System.out.println();
+				System.out.println("下午第三节学物理的总人数"+realSelectiveClasses.numberOfCourse[0][2][0]);
+				System.out.println("下午第三节学化学的总人数"+realSelectiveClasses.numberOfCourse[0][2][1]);
+				System.out.println("下午第三节学生物的总人数"+realSelectiveClasses.numberOfCourse[0][2][2]);
+				System.out.println("下午第三节学历史的总人数"+realSelectiveClasses.numberOfCourse[0][2][3]);
+				System.out.println("下午第三节学地理的总人数"+realSelectiveClasses.numberOfCourse[0][2][4]);
+				System.out.println("下午第三节学政治的总人数"+realSelectiveClasses.numberOfCourse[0][2][5]);
+			
+				System.out.println("yes");
+			    System.out.println("yes");
+			    System.out.println("yes");
+			    System.out.println("yes");
+			    
+			    System.out.println("下面是学生的选课情况");
+			    for(int i=0;i<100;i++) {
+			    	System.out.println("学生的编号"+realStudent[i].studentNumberOfSchool);
+			    	System.out.println("学生下午第一节选的是"+MatchChineseNameOfCourse(realStudent[i].mySelectiveCourse[0][0]));
+			    	System.out.println("下午第一节课班号"+(realStudent[i].firstClassCourseNumber[0]+1));
+			    	System.out.println("下午第一节课老师编号"+(realStudent[i].firstClassTeacher[0]+1));
+			    	
+			    	System.out.println("学生下午第二节选的是"+MatchChineseNameOfCourse(realStudent[i].mySelectiveCourse[0][1]));
+			    	System.out.println("下午第二节课班号"+(realStudent[i].secondClassCourseNumber[0]+1));
+			    	System.out.println("下午第二节课老师编号"+(realStudent[i].secondClassTeacher[0]+1));
+			    	
+			    	System.out.println("学生下午第四节选的是"+MatchChineseNameOfCourse(realStudent[i].mySelectiveCourse[0][2]));
+			    	System.out.println("下午第四节课班号"+(realStudent[i].fourthClassCourseNumber[0]+1));
+			    	System.out.println("下午第四节课老师编号"+(realStudent[i].fourthClassTeacher[0]+1));
+			    	
+			    	System.out.println();
+					System.out.println();
+					System.out.println();
+			    }
+			    /*class Student{
+	String name;
+	int studentNumberOfSchool;
+	int[][] mySelectiveCourse=new int[4][3];//四天每天三门课，里面的内容代表的是星期几第几节所选的课，比如mySelectiveCourse[1][2]=3意思是星期二第四节选的是生物课
+	int[] firstClassCourseNumber=new int[4];//下午第一节课，所选该科目的编号，比如星期一下午选了物理，对选物理的同学进行分班，该同学所在班的编号
+	int[] firstClassTeacher=new int[4];//老师的编号
+	int[] secondClassCourseNumber=new int[4];//下午第二节课
+	int[] secondClassTeacher=new int[4];
+	int[] fourthClassCourseNumber=new int[4];//下午第四节课
+	int[] fourthClassTeacher=new int[4];
+	//各科目都安排有number，比如星期一第一节课选物理的同学有一个ID（即在所选科目的编号），比如星期一下午物理共84人选，他在这84人中的编号为四号，。总共有四天
+	int[][][] studentIDOfEachSelectiveClass=new int[4][3][6];
+	
+}*/
+			    
+			
+				//System.out.println(realStudent[14].firstClassTeacher[0]);
+			
+				/*********************该部分对政治进行安排************************/
+	}
+	
+	public static String MatchChineseNameOfCourse(int numberOfCourse){
+		switch(numberOfCourse) {
+		case 1:
+			return "物理";
+		case 2:
+			return "化学";
+		case 3:
+			return "生物";
+		case 4:
+			return "历史";
+		case 5:
+			return "地理";
+		case 6:
+			return "政治";
+		}
+		
+		return "";
+		
+	}
+	//已知某学生第几节课学什么的学科编号，可以得到学生的学号
+	public static int convertFromIDOfEachClassToNumberOfSchool(int m,int course,int IDOfEachClass){ //m代表第几节课
+		for(int i=0;i<100;i++) {
+			if(realStudent[i].studentIDOfEachSelectiveClass[0][m][course]==IDOfEachClass) {
+				return realStudent[i].studentNumberOfSchool;
+			}
+			
+
+		}
+		return 0;
+	}
+	
+	
+
+}
+
+/*至此，完成了下午课表的安排
+ * 对于class Student即学生类，每一位学生可以在自己的类中查看到自己星期一下午第一节课的老师与自己的班号，以此类推
+ *对于 class PhysicsTeacher即物理老师类，每一位物理老师可以看见自己星期一下午第一节课的学生物理编号
+ *即完成了每位学生中有老师的信息，班号的信息
+ *每位老师中有对应学生的名单
+ * 
+ * 
+ * 
+ * 
+ * 
+ */

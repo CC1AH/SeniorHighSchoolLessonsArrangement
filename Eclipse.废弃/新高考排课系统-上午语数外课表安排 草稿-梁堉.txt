@@ -1,0 +1,150 @@
+/*这是新高考自动排课表系统，下面是对早上语数外进行课表安排，总的班级分为两个优秀班与其它普通班，该部分学生不进行选课，直接由学校安排
+ * 要求先前对学生成绩按从高到低排列并编学号1-n。以便分班
+ * 要求语数外教师组成队伍，三个教师一队，从上到下为语数外教师，并且编号0-2下一组教师按语数外编号3-5，以此类推（注0-5号老师为优秀教师即可以教优秀班级的教师）
+ */
+import java.util.*;
+
+class RealClass{//RealClass这里代表的是班级
+	int[] studentNumber=new int[100];//studentNumber代表学生的编号
+	int[] teacher=new int[3];//teacher[0]代表语文老师，teacher[1]代表数学老师，teacher[2]代表英语老师
+	String[][] classes=new String[5][4];//classes代表的是实际的课程，5是一周上五天即星期一到星期五，4就是早上的四节课
+}
+
+
+public class MainRunning {
+	public static void main(String[] args) {
+		System.out.println("请输入学生总数（数字）");
+		Scanner reading1=new Scanner(System.in);
+		String totalStudentString=reading1.next();
+		int totalStudentInt=Integer.parseInt(totalStudentString);
+		System.out.println("说明：语数外老师各教两个班，所以语数外老师总数为三的倍数");
+		System.out.println("请输入教师总数（数字）");
+		Scanner reading2=new Scanner(System.in);
+		String totalTeacherString=reading2.next();
+		int totalTeacherInt=Integer.parseInt(totalTeacherString);
+		//这部分实现了输入老师与学生的人数
+		
+		int teacherTotalGroupNumber=totalTeacherInt/3;
+	    int totalClasses=teacherTotalGroupNumber*2;
+		int studentNumberOfClass=totalStudentInt/totalClasses;
+		//这部分实现了计算班数与每班人数
+		
+		RealClass[] classes=new RealClass[totalClasses];
+		for(int i=0;i<classes.length;i++) {
+			classes[i]=new RealClass();
+		}
+		
+		//下面的代码实现划分优秀班级两个，使优秀班级形成竞争，classes[0],classes[1]为优秀班级
+		for(int i=0;i<studentNumberOfClass;i++) {
+			classes[0].studentNumber[i]=i;
+		}
+		for(int i=studentNumberOfClass;i<studentNumberOfClass*2;i++) {
+			classes[1].studentNumber[i-studentNumberOfClass]=i;
+		}
+		
+		//下面对剩下的学生进行分班，均匀分班，即各班成绩均衡
+		int addNumber=totalClasses-2;
+		int jAdd=0;
+		for(int i=2;i<totalClasses;i++) {
+			for(int j=studentNumberOfClass*2+jAdd;j<totalStudentInt;j+=addNumber) {
+				classes[i].studentNumber[(j-studentNumberOfClass*2-jAdd)/addNumber]=j;
+			}
+			jAdd++;
+		}
+		
+		//下面对每个班安排老师
+		
+		int numberOfTeacher=0;
+		for(int i=0;i<totalClasses/2;i++) {
+			classes[i].teacher[0]=numberOfTeacher;
+			numberOfTeacher++;
+			classes[i].teacher[1]=numberOfTeacher;
+			numberOfTeacher++;
+			classes[i].teacher[2]=numberOfTeacher;
+			numberOfTeacher++;
+		}//这是对前面一半的班级安排教师
+		
+		int startNumberOfTeacher=0;
+		for(int i=totalClasses/2;i<totalClasses;i++) {
+			
+			if((startNumberOfTeacher+8)==(totalTeacherInt+2)) {
+				classes[i].teacher[0]=startNumberOfTeacher;
+				classes[i].teacher[1]=startNumberOfTeacher+4;
+				classes[i].teacher[2]=2;
+			}
+			else if((startNumberOfTeacher+8)==(totalTeacherInt+5))
+			{
+				classes[i].teacher[0]=startNumberOfTeacher;
+				classes[i].teacher[1]=1;
+				classes[i].teacher[2]=5;
+			}
+			else {
+				classes[i].teacher[0]=startNumberOfTeacher;
+				classes[i].teacher[1]=startNumberOfTeacher+4;
+				classes[i].teacher[2]=startNumberOfTeacher+8;
+				
+			}
+			startNumberOfTeacher+=3;
+		}//这是对后一半的班级进行安排老师
+		
+		//下面对早上课表进行安排
+		
+		//先是前面一半的班级
+		for(int i=0;i<totalClasses/2;i++) {
+			classes[i].classes[0][0]="数学";
+			classes[i].classes[0][1]="语文";
+			classes[i].classes[0][2]="英语";
+			classes[i].classes[0][3]="英语";//星期一的课表
+			
+			classes[i].classes[1][0]="英语";
+			classes[i].classes[1][1]="语文";
+			classes[i].classes[1][2]="数学";
+			classes[i].classes[1][3]="数学";//星期二的课表
+			
+			classes[i].classes[2][0]="语文";
+			classes[i].classes[2][1]="语文";
+			classes[i].classes[2][2]="数学";
+			classes[i].classes[2][3]="英语";//星期三的课表
+			
+			classes[i].classes[3][0]="英语";
+			classes[i].classes[3][1]="英语";
+			classes[i].classes[3][2]="数学";
+			classes[i].classes[3][3]="语文";//星期四的课表
+			
+			classes[i].classes[4][0]="数学";
+			classes[i].classes[4][1]="数学";
+			classes[i].classes[4][2]="语文";
+			classes[i].classes[4][3]="英语";//星期五的课表
+		}
+		
+		//后面一半的班级
+		for(int i=totalClasses/2;i<totalClasses;i++) {
+			classes[i].classes[0][0]="英语";
+			classes[i].classes[0][1]="英语";
+			classes[i].classes[0][2]="数学";
+			classes[i].classes[0][3]="语文";//星期一的课表
+			
+			classes[i].classes[1][0]="数学";
+			classes[i].classes[1][1]="数学";
+			classes[i].classes[1][2]="语文";
+			classes[i].classes[1][3]="英语";//星期二的课表
+			
+			classes[i].classes[2][0]="英语";
+			classes[i].classes[2][1]="数学";
+			classes[i].classes[2][2]="语文";
+			classes[i].classes[2][3]="语文";//星期三的课表
+			
+			classes[i].classes[3][0]="数学";
+			classes[i].classes[3][1]="语文";
+			classes[i].classes[3][2]="英语";
+			classes[i].classes[3][3]="英语";//星期四的课表
+			
+			classes[i].classes[4][0]="语文";
+			classes[i].classes[4][1]="英语";
+			classes[i].classes[4][2]="数学";
+			classes[i].classes[4][3]="数学";//星期五的课表
+		}
+		
+	}
+
+}

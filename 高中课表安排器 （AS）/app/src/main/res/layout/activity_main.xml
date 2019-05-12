@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/aim"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/main_backgroud"
+    android:orientation="vertical"
+    tools:context=".UserConnection.MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="397dp"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="0.2"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_horizontal">
+
+            <ImageView
+                android:id="@+id/left_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5sp"
+                app:srcCompat="@mipmap/download" />
+
+            <TextView
+                android:id="@+id/up_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="40sp"
+                android:layout_marginTop="15sp"
+                android:layout_marginRight="40sp"
+                android:layout_marginBottom="15sp"
+                android:text="高中"
+                android:textColor="@android:color/holo_orange_dark"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/right_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5sp"
+                app:srcCompat="@mipmap/application" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_horizontal|center_vertical">
+
+            <TextView
+                android:id="@+id/mid_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="选课安排器"
+                android:textColor="@android:color/holo_orange_dark"
+                android:textSize="40sp"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_horizontal|center_vertical">
+
+            <TextView
+                android:id="@+id/mid_hint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="6sp"
+                android:text="快速登入"
+                android:textColor="@android:color/holo_blue_dark"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/editText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8sp"
+                android:background="@android:color/darker_gray"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:textColor="@android:color/holo_red_light" />
+
+            <Button
+                android:id="@+id/b10"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8sp"
+                android:background="@color/colorPrimaryDark"
+                android:text="进入"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+        </TableRow>
+
+    </LinearLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1.0">
+
+        <Button
+            android:id="@+id/b04"
+            android:layout_width="153dp"
+            android:layout_height="64dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@android:drawable/arrow_down_float"
+            android:onClick="exit_program"
+            android:text="退出"
+            android:textColor="@android:color/holo_purple"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/b00" />
+
+        <Button
+            android:id="@+id/stu_b02"
+            android:layout_width="166dp"
+            android:layout_height="74dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:background="@android:drawable/arrow_up_float"
+            android:onClick="get_into_admin_input"
+            android:text="管理者入口"
+            android:textColor="@android:color/holo_blue_bright"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/b00"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/b03"
+            android:layout_width="103dp"
+            android:layout_height="59dp"
+            android:layout_margin="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:background="@android:drawable/arrow_up_float"
+            android:onClick="get_into_tea_input"
+            android:text="教师入口"
+            android:textColor="@android:color/holo_blue_bright"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@+id/b00"
+            app:layout_constraintStart_toEndOf="@+id/b00"
+            app:layout_constraintTop_toTopOf="@+id/b00"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <Button
+            android:id="@+id/b00"
+            android:layout_width="167dp"
+            android:layout_height="71dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@mipmap/main_backgroud"
+            android:onClick="get_into_description"
+            android:text="说明"
+            android:textColor="@android:color/holo_purple"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/stu_b01"
+            android:layout_width="106dp"
+            android:layout_height="57dp"
+            android:layout_margin="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:background="@android:drawable/arrow_up_float"
+            android:onClick="get_into_stu_input"
+            android:text="学生入口"
+            android:textColor="@android:color/holo_blue_light"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/b00"
+            app:layout_constraintEnd_toStartOf="@+id/b00"
+            app:layout_constraintTop_toTopOf="@+id/b00" />
+    </android.support.constraint.ConstraintLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1.5"
+        android:orientation="horizontal">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="bottom">
+
+            <Switch
+                android:id="@+id/switch1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="白天/夜晚模式切换"
+                android:textColor="@android:color/background_light" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="bottom|right"/>
+    </LinearLayout>
+
+</LinearLayout>
