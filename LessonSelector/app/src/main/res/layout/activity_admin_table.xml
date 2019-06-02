@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/table_backgound"
+    android:gravity="bottom"
+    android:orientation="vertical"
+    tools:context=".UserConnection.admin_table">
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/admin_table_viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="676dp" />
+
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/admin_table_bottomnavigationview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:menu="@menu/admin_memu" />
+</LinearLayout>
